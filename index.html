@@ -379,6 +379,53 @@
   }
   .save-btn.stamped{background:var(--accent);color:#fff;}
 
+  .confirm-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(20,18,16,.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:24px;
+  }
+  .confirm-overlay.show{display:flex;}
+  .confirm-box{
+    background:#fff;
+    border-radius:16px;
+    padding:28px 24px 22px;
+    max-width:340px;
+    width:100%;
+    text-align:center;
+    box-shadow:0 8px 30px rgba(0,0,0,.25);
+  }
+  .confirm-box .confirm-message{
+    font-size:18px;
+    font-weight:700;
+    color:var(--ink);
+    line-height:1.5;
+    margin-bottom:22px;
+    white-space:pre-line;
+  }
+  .confirm-box .confirm-btns{
+    display:flex;
+    gap:12px;
+  }
+  .confirm-box button{
+    flex:1;
+    font-family:inherit;
+    font-size:18px;
+    font-weight:900;
+    padding:16px 8px;
+    border-radius:12px;
+    cursor:pointer;
+    border:none;
+  }
+  .confirm-yes{background:var(--accent);color:#fff;}
+  .confirm-yes:active{background:#8a1f21;}
+  .confirm-no{background:#EDEAE0;color:var(--ink);}
+  .confirm-no:active{background:#DCD7C9;}
+
   .toast{
     position:fixed;
     bottom:calc(22px + env(safe-area-inset-bottom));left:50%;
@@ -432,10 +479,10 @@
   }
   .entry-edit:active{background:var(--ink);color:#fff;}
   .entry-del{
-    border:none;background:none;color:var(--ink-soft);
+    border:none;background:none;color:var(--accent);
     font-size:18px;cursor:pointer;padding:2px 4px;line-height:1;
   }
-  .entry-del:active{color:var(--accent);}
+  .entry-del:active{color:#8a1f21;}
   .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
   .tag{
     font-size:12px;font-weight:700;
@@ -660,7 +707,7 @@
         <span class="field-label">工事名</span>
         <input type="text" id="w1-name" placeholder="工事名を入力">
       </label>
-      <div class="row2">
+      <div class="row2" style="gap:36px;">
         <label class="field">
           <span class="field-label">開始時間</span>
           <input type="time" id="w1-start">
@@ -698,7 +745,7 @@
         <span class="field-label">工事名</span>
         <input type="text" id="w2-name" placeholder="工事名を入力">
       </label>
-      <div class="row2">
+      <div class="row2" style="gap:36px;">
         <label class="field">
           <span class="field-label">開始時間</span>
           <input type="time" id="w2-start">
@@ -736,7 +783,7 @@
         <span class="field-label">工事名</span>
         <input type="text" id="ot-name" placeholder="工事名を入力">
       </label>
-      <div class="row2">
+      <div class="row2" style="gap:36px;">
         <label class="field">
           <span class="field-label">開始時間</span>
           <input type="time" id="ot-start">
@@ -862,6 +909,16 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-message" id="confirm-message">本当に削除しますか？</div>
+    <div class="confirm-btns">
+      <button class="confirm-no" id="confirm-no-btn">いいえ</button>
+      <button class="confirm-yes" id="confirm-yes-btn">はい</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ---- storage: use Claude's built-in artifact storage when available,
@@ -1102,6 +1159,29 @@ function showToast(msg){
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+// ---- custom confirmation dialog (large はい/いいえ) ----
+function showConfirm(message){
+  return new Promise(resolve=>{
+    const overlay = document.getElementById('confirm-overlay');
+    const msgEl = document.getElementById('confirm-message');
+    const yesBtn = document.getElementById('confirm-yes-btn');
+    const noBtn = document.getElementById('confirm-no-btn');
+    msgEl.textContent = message;
+    overlay.classList.add('show');
+
+    function cleanup(result){
+      overlay.classList.remove('show');
+      yesBtn.removeEventListener('click', onYes);
+      noBtn.removeEventListener('click', onNo);
+      resolve(result);
+    }
+    function onYes(){ cleanup(true); }
+    function onNo(){ cleanup(false); }
+    yesBtn.addEventListener('click', onYes);
+    noBtn.addEventListener('click', onNo);
+  });
 }
 
 // ---- read a 工事名/開始/終了/休憩/内容 block ----
@@ -1529,7 +1609,8 @@ function renderEntry(entry){
   });
 
   div.querySelector('.entry-del').addEventListener('click', async ()=>{
-    if(!confirm('この記録を削除しますか？')) return;
+    const ok = await showConfirm('本当に削除しますか？');
+    if(!ok) return;
     try{
       await storageDelete('entries:'+entry.id);
       div.remove();
