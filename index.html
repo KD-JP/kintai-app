@@ -6,9 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="勤怠記録">
+<meta name="apple-mobile-web-app-title" content="勤怠日報">
 <meta name="theme-color" content="#9FB4CC">
-<title>勤怠記録</title>
+<title>勤怠日報</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Zen+Maru+Gothic:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -20,13 +20,15 @@
     --border:#D3DEE9;
     --accent:#BE2A2C;      /* hanko red */
     --accent-soft:#F5DEDD;
-    --zaisha:#2F6690;      /* 在社 */
+    --zaisha:#7A7E85;      /* 在社 */
     --genba:#C2711A;       /* 現場 */
-    --yukyu:#3D8A5A;       /* 有休 */
-    --daikyu:#238A83;      /* 代休 */
+    --yukyu:#E08080;       /* 有休 */
+    --daikyu:#C85C5C;      /* 代休 */
     --koushu:#7358A6;      /* 講習 */
     --kaigi:#565F78;       /* 会議 */
     --eigyou:#A57A15;      /* 営業 */
+    --uchiawase:#B23A6B;   /* 打合 */
+    --genchou:#5E7A2F;     /* 現調 */
     --radius:14px;
   }
   *{box-sizing:border-box;}
@@ -263,6 +265,8 @@
   .cat-select[data-val="koushu"]{background-color:var(--koushu);}
   .cat-select[data-val="kaigi"]{background-color:var(--kaigi);}
   .cat-select[data-val="eigyou"]{background-color:var(--eigyou);}
+  .cat-select[data-val="uchiawase"]{background-color:var(--uchiawase);}
+  .cat-select[data-val="genchou"]{background-color:var(--genchou);}
   .cat-select.filled{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1l6 6 6-6' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>");}
 
   .switch-list{display:flex;flex-direction:column;gap:10px;}
@@ -445,6 +449,8 @@
   .tag.koushu{background:var(--koushu);}
   .tag.kaigi{background:var(--kaigi);}
   .tag.eigyou{background:var(--eigyou);}
+  .tag.uchiawase{background:var(--uchiawase);}
+  .tag.genchou{background:var(--genchou);}
   .tag.opt{background:#EDEAE0;color:var(--ink);}
   .entry-times{
     display:flex;
@@ -543,7 +549,7 @@
 <div class="app">
 
   <div class="header">
-    <h1><span class="seal">勤</span>勤怠記録</h1>
+    <h1><span class="seal">勤</span>勤怠日報</h1>
   </div>
 
   <div class="tabs">
@@ -575,7 +581,7 @@
         <span class="field-label">出勤時刻</span>
         <div class="punch-row">
           <input type="time" id="f-in-time">
-          <button class="punch-btn" data-punch="in">📍 出勤を打刻</button>
+          <button class="punch-btn" data-punch="in">出勤を打刻</button>
         </div>
         <div class="geo-result" id="geo-in"></div>
       </label>
@@ -583,7 +589,7 @@
         <span class="field-label">退勤時刻</span>
         <div class="punch-row">
           <input type="time" id="f-out-time">
-          <button class="punch-btn" data-punch="out">📍 退勤を打刻</button>
+          <button class="punch-btn" data-punch="out">退勤を打刻</button>
         </div>
         <div class="geo-result" id="geo-out"></div>
       </label>
@@ -595,12 +601,14 @@
         <div class="half-title"><span class="dot"></span>午前 / 前半</div>
         <select class="cat-select" id="sel-am" data-group="am">
           <option value="" disabled selected>選択してください</option>
-          <option value="zaisha">在社</option>
           <option value="genba">現場</option>
-          <option value="yukyu">有休</option>
-          <option value="daikyu">代休</option>
+          <option value="uchiawase">打合</option>
+          <option value="genchou">現調</option>
+          <option value="zaisha">在社</option>
           <option value="koushu">講習</option>
           <option value="kaigi">会議</option>
+          <option value="yukyu">有休</option>
+          <option value="daikyu">代休</option>
           <option value="eigyou">営業</option>
         </select>
       </div>
@@ -608,12 +616,14 @@
         <div class="half-title"><span class="dot"></span>午後 / 後半</div>
         <select class="cat-select" id="sel-pm" data-group="pm">
           <option value="" disabled selected>選択してください</option>
-          <option value="zaisha">在社</option>
           <option value="genba">現場</option>
-          <option value="yukyu">有休</option>
-          <option value="daikyu">代休</option>
+          <option value="uchiawase">打合</option>
+          <option value="genchou">現調</option>
+          <option value="zaisha">在社</option>
           <option value="koushu">講習</option>
           <option value="kaigi">会議</option>
+          <option value="yukyu">有休</option>
+          <option value="daikyu">代休</option>
           <option value="eigyou">営業</option>
         </select>
       </div>
@@ -889,7 +899,7 @@ if(!window.storage){
   })();
 }
 
-const CAT_LABEL = {zaisha:"在社",genba:"現場",yukyu:"有休",daikyu:"代休",koushu:"講習",kaigi:"会議",eigyou:"営業"};
+const CAT_LABEL = {zaisha:"在社",genba:"現場",yukyu:"有休",daikyu:"代休",koushu:"講習",kaigi:"会議",eigyou:"営業",uchiawase:"打合",genchou:"現調"};
 
 // ---- storage helpers (explicit shared flag + retry on save, for robustness) ----
 async function storageGet(key){
@@ -994,7 +1004,7 @@ document.querySelectorAll('.punch-btn').forEach(btn=>{
     }
 
     btn.classList.add('busy');
-    btn.textContent = '📍 取得中…';
+    btn.textContent = '取得中…';
 
     navigator.geolocation.getCurrentPosition(
       pos=>{
@@ -1007,7 +1017,7 @@ document.querySelectorAll('.punch-btn').forEach(btn=>{
         resultEl.classList.add('show');
         btn.classList.remove('busy');
         btn.classList.add('done');
-        btn.textContent = `📍 ${label}打刻済み（再打刻）`;
+        btn.textContent = `${label}打刻済み（再打刻）`;
       },
       err=>{
         let msg = '時刻は記録しましたが、位置情報を取得できませんでした。端末の設定をご確認ください。';
@@ -1019,7 +1029,7 @@ document.querySelectorAll('.punch-btn').forEach(btn=>{
         resultEl.textContent = msg;
         resultEl.classList.add('show','error');
         btn.classList.remove('busy');
-        btn.textContent = `📍 ${label}を打刻`;
+        btn.textContent = `${label}を打刻`;
       },
       { enableHighAccuracy:true, timeout:10000 }
     );
@@ -1256,7 +1266,7 @@ function resetForm(){
   document.querySelectorAll('.geo-result').forEach(el=>{el.classList.remove('show','error');el.innerHTML='';});
   document.querySelectorAll('.punch-btn').forEach(b=>{
     b.classList.remove('busy','done');
-    b.textContent = b.dataset.punch==='in' ? '📍 出勤を打刻' : '📍 退勤を打刻';
+    b.textContent = b.dataset.punch==='in' ? '出勤を打刻' : '退勤を打刻';
   });
   editingId = null;
   editingOriginal = null;
@@ -1286,7 +1296,7 @@ function loadEntryIntoForm(entry){
       resultEl.classList.add('show');
       const label = which==='in' ? '出勤' : '退勤';
       btn.classList.add('done');
-      btn.textContent = `📍 ${label}打刻済み（再打刻）`;
+      btn.textContent = `${label}打刻済み（再打刻）`;
     }
   });
 
