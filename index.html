@@ -179,6 +179,8 @@
     transition:transform .1s, background .15s;
   }
   .punch-btn:active{transform:scale(.96);}
+  .punch-btn[data-punch="in"]{background:#2F6690;border-color:#2F6690;color:#fff;}
+  .punch-btn[data-punch="out"]{background:var(--accent);border-color:var(--accent);color:#fff;}
   .punch-btn.busy{background:var(--ink-soft);border-color:var(--ink-soft);}
   .punch-btn.done{background:var(--zaisha);border-color:var(--zaisha);}
 
@@ -627,16 +629,16 @@
       <label class="field">
         <span class="field-label">出勤時刻</span>
         <div class="punch-row">
+          <button class="punch-btn" data-punch="in">出勤打刻</button>
           <input type="time" id="f-in-time">
-          <button class="punch-btn" data-punch="in">出勤を打刻</button>
         </div>
         <div class="geo-result" id="geo-in"></div>
       </label>
       <label class="field">
         <span class="field-label">退勤時刻</span>
         <div class="punch-row">
+          <button class="punch-btn" data-punch="out">退勤打刻</button>
           <input type="time" id="f-out-time">
-          <button class="punch-btn" data-punch="out">退勤を打刻</button>
         </div>
         <div class="geo-result" id="geo-out"></div>
       </label>
@@ -1086,7 +1088,7 @@ document.querySelectorAll('.punch-btn').forEach(btn=>{
         resultEl.textContent = msg;
         resultEl.classList.add('show','error');
         btn.classList.remove('busy');
-        btn.textContent = `${label}を打刻`;
+        btn.textContent = `${label}打刻`;
       },
       { enableHighAccuracy:true, timeout:10000 }
     );
@@ -1346,7 +1348,7 @@ function resetForm(){
   document.querySelectorAll('.geo-result').forEach(el=>{el.classList.remove('show','error');el.innerHTML='';});
   document.querySelectorAll('.punch-btn').forEach(b=>{
     b.classList.remove('busy','done');
-    b.textContent = b.dataset.punch==='in' ? '出勤を打刻' : '退勤を打刻';
+    b.textContent = b.dataset.punch==='in' ? '出勤打刻' : '退勤打刻';
   });
   editingId = null;
   editingOriginal = null;
