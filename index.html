@@ -856,7 +856,7 @@
 
     <div class="save-wrap">
       <button class="save-btn" id="save-btn">
-        <span id="save-btn-label">記録する</span>
+        <span id="save-btn-label">保存する</span>
       </button>
     </div>
   </div>
@@ -1309,11 +1309,11 @@ document.getElementById('save-btn').addEventListener('click', async ()=>{
   if(sheetUrl){
     const syncResult = await postToSheet(buildSheetPayload(entry));
     showToast(
-      (wasEditing ? '更新しました' : '記録しました') +
+      (wasEditing ? '更新しました' : '保存しました') +
       (syncResult.ok ? '・シートに反映しました' : '・シートへの反映に失敗しました')
     );
   }else{
-    showToast(wasEditing ? '更新しました' : '記録しました');
+    showToast(wasEditing ? '更新しました' : '保存しました');
   }
 
   resetForm();
@@ -1353,7 +1353,7 @@ function resetForm(){
   editingId = null;
   editingOriginal = null;
   document.getElementById('edit-banner').classList.remove('show');
-  document.getElementById('save-btn-label').textContent = '記録する';
+  document.getElementById('save-btn-label').textContent = '保存する';
 }
 
 // ---- edit an existing entry ----
