@@ -1028,6 +1028,16 @@ document.getElementById('f-date').value = todayStr();
   }catch(e){ /* not set yet */ }
 })();
 
+// ---- load previously entered 勤務情報① 工事名 ----
+(async function loadLastW1Name(){
+  try{
+    const r = await storageGet('settings:lastW1Name');
+    if(r && r.value){
+      document.getElementById('w1-name').value = r.value;
+    }
+  }catch(e){ /* not set yet */ }
+})();
+
 // ---- tabs ----
 function activateTab(tab){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
@@ -1306,6 +1316,10 @@ document.getElementById('save-btn').addEventListener('click', async ()=>{
     try{ await storageSet('settings:lastName', name); }catch(e){ /* non-critical */ }
   }
 
+  if(entry.work1 && entry.work1.name){
+    try{ await storageSet('settings:lastW1Name', entry.work1.name); }catch(e){ /* non-critical */ }
+  }
+
   if(sheetUrl){
     const syncResult = await postToSheet(buildSheetPayload(entry));
     showToast(
@@ -1326,7 +1340,9 @@ function resetForm(){
   document.getElementById('f-out-time').value = '';
   document.getElementById('f-note').value = '';
   ['w1','w2','ot'].forEach(prefix=>{
-    document.getElementById(prefix+'-name').value = '';
+    if(prefix !== 'w1'){
+      document.getElementById(prefix+'-name').value = '';
+    }
     document.getElementById(prefix+'-start').value = '';
     document.getElementById(prefix+'-end').value = '';
     document.getElementById(prefix+'-break').value = '0';
