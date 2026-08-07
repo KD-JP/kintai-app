@@ -1345,7 +1345,7 @@ document.getElementById('save-btn').addEventListener('click', async ()=>{
   }
 
   if(sheetUrl){
-    labelEl.textContent = 'シートに反映中…';
+    labelEl.textContent = '保存中…';
     const syncResult = await postToSheet(buildSheetPayload(entry));
     showToast(
       (wasEditing ? '更新しました' : '保存しました') +
