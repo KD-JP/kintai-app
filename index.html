@@ -1340,7 +1340,6 @@ document.getElementById('save-btn').addEventListener('click', async ()=>{
 
   if(!date){ showToast('日付を入力してください'); return; }
   if(!name){ showToast('記入者を入力してください'); return; }
-  if(!selected.am && !selected.pm){ showToast('区分を選択してください'); return; }
 
   const entry = {
     id: editingId || ('e_' + Date.now() + '_' + Math.random().toString(36).slice(2,7)),
