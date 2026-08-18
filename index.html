@@ -1380,11 +1380,8 @@ document.getElementById('save-btn').addEventListener('click', async ()=>{
     return;
   }
 
-  btn.classList.remove('saving');
-  btn.classList.add('stamped');
-  playBeep();
-  setTimeout(()=>btn.classList.remove('stamped'), 350);
-
+  // keep the red/white "saving" look active through every remaining step
+  // (local extras, sheet sync) so the button doesn't flicker back early
   if(name){
     try{ await storageSet('settings:lastName', name); }catch(e){ /* non-critical */ }
   }
@@ -1394,7 +1391,6 @@ document.getElementById('save-btn').addEventListener('click', async ()=>{
   }
 
   if(sheetUrl){
-    labelEl.textContent = '保存中…';
     const syncResult = await postToSheet(buildSheetPayload(entry));
     showToast(
       (wasEditing ? '更新しました' : '保存しました') +
@@ -1404,8 +1400,13 @@ document.getElementById('save-btn').addEventListener('click', async ()=>{
     showToast(wasEditing ? '更新しました' : '保存しました');
   }
 
-  btn.disabled = false;
+  // everything is done: brief stamp + beep, then revert to the normal look
   btn.classList.remove('saving');
+  btn.classList.add('stamped');
+  playBeep();
+  setTimeout(()=>btn.classList.remove('stamped'), 350);
+
+  btn.disabled = false;
   resetForm();
 });
 
