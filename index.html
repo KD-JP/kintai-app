@@ -77,6 +77,14 @@
     font-size:13px;font-weight:700;
     flex:none;
   }
+  .live-clock{
+    font-variant-numeric:tabular-nums;
+    font-size:22px;
+    font-weight:900;
+    color:var(--ink);
+    letter-spacing:.02em;
+    flex:none;
+  }
   .tabs{
     display:flex;
     gap:6px;
@@ -669,6 +677,7 @@
 
   <div class="header">
     <h1><span class="seal">勤</span>勤怠日報</h1>
+    <div class="live-clock" id="live-clock">--:--:--</div>
   </div>
 
   <div class="tabs">
@@ -1004,6 +1013,18 @@
 </div>
 
 <script>
+// ---- header live clock ----
+(function(){
+  const clockEl = document.getElementById('live-clock');
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function tick(){
+    const now = new Date();
+    clockEl.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
 // ---- storage: use Claude's built-in artifact storage when available,
 // otherwise fall back to the browser's localStorage so this file also
 // works standalone (opened directly, hosted, etc.) ----
