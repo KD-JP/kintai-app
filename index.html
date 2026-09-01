@@ -167,6 +167,11 @@
     transition:border-color .15s;
   }
   input:focus, textarea:focus{border-color:var(--ink);}
+  input[type="time"][readonly]{
+    background:#EEECE4;
+    color:var(--ink-soft);
+    cursor:not-allowed;
+  }
   textarea{resize:vertical;min-height:56px;font-size:15px;font-weight:600;}
 
   .row2{display:flex;gap:10px;}
@@ -715,7 +720,7 @@
         <span class="field-label">出勤時刻</span>
         <div class="punch-row">
           <button class="punch-btn" data-punch="in">出勤打刻</button>
-          <input type="time" id="f-in-time">
+          <input type="time" id="f-in-time" readonly>
         </div>
         <div class="geo-result" id="geo-in"></div>
       </label>
@@ -723,7 +728,7 @@
         <span class="field-label">退勤時刻</span>
         <div class="punch-row">
           <button class="punch-btn" data-punch="out">退勤打刻</button>
-          <input type="time" id="f-out-time">
+          <input type="time" id="f-out-time" readonly>
         </div>
         <div class="geo-result" id="geo-out"></div>
       </label>
@@ -1167,8 +1172,10 @@ document.querySelectorAll('.punch-btn').forEach(btn=>{
     const resultEl = document.getElementById('geo-'+which);
     const label = which==='in' ? '出勤' : '退勤';
 
-    // Stamp the time immediately regardless of geolocation outcome
+    // Stamp the time immediately regardless of geolocation outcome,
+    // and unlock manual editing now that a punch has been made.
     timeInput.value = nowTimeStr();
+    timeInput.removeAttribute('readonly');
 
     if(!navigator.geolocation){
       resultEl.textContent = '時刻を記録しました（この端末・ブラウザでは位置情報を取得できません）。';
@@ -1499,7 +1506,9 @@ function resetForm(){
   document.getElementById('f-date').value = todayStr();
   document.getElementById('f-name').value = document.getElementById('f-name').value; // keep name
   document.getElementById('f-in-time').value = '';
+  document.getElementById('f-in-time').setAttribute('readonly', '');
   document.getElementById('f-out-time').value = '';
+  document.getElementById('f-out-time').setAttribute('readonly', '');
   document.getElementById('f-note').value = '';
   ['w1','w2','ot'].forEach(prefix=>{
     if(prefix !== 'w1'){
@@ -1543,7 +1552,9 @@ function loadEntryIntoForm(entry){
   document.getElementById('f-note').value = entry.note || '';
 
   document.getElementById('f-in-time').value = (entry.checkIn && entry.checkIn.time) || '';
+  if(entry.checkIn && entry.checkIn.time){ document.getElementById('f-in-time').removeAttribute('readonly'); }
   document.getElementById('f-out-time').value = (entry.checkOut && entry.checkOut.time) || '';
+  if(entry.checkOut && entry.checkOut.time){ document.getElementById('f-out-time').removeAttribute('readonly'); }
   geoData.in = (entry.checkIn && entry.checkIn.geo) || null;
   geoData.out = (entry.checkOut && entry.checkOut.geo) || null;
   ['in','out'].forEach(which=>{
