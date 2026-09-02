@@ -470,6 +470,23 @@
   .confirm-no{background:#EDEAE0;color:var(--ink);}
   .confirm-no:active{background:#DCD7C9;}
 
+  .time-edit-input{
+    width:100%;
+    font-family:inherit;
+    font-size:34px;
+    font-weight:900;
+    text-align:center;
+    letter-spacing:.04em;
+    padding:14px 10px;
+    border:1.4px solid var(--border);
+    border-radius:12px;
+    background:#FCFBF8;
+    color:var(--ink);
+    margin-bottom:22px;
+    outline:none;
+  }
+  .time-edit-input:focus{border-color:var(--ink);}
+
   .toast{
     position:fixed;
     bottom:calc(22px + env(safe-area-inset-bottom));left:50%;
@@ -1024,6 +1041,17 @@
   </div>
 </div>
 
+<div class="confirm-overlay" id="time-edit-overlay">
+  <div class="confirm-box">
+    <div class="confirm-message" id="time-edit-title">出勤時刻</div>
+    <input type="time" id="time-edit-input" class="time-edit-input">
+    <div class="confirm-btns">
+      <button class="confirm-no" id="time-edit-cancel">キャンセル</button>
+      <button class="confirm-yes" id="time-edit-confirm">確定</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ---- header live clock ----
 (function(){
@@ -1164,18 +1192,46 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>activateTab(btn.dataset.tab));
 });
 
+// ---- time edit modal (shown after pressing a punch button) ----
+function openTimeEditModal(label, initialTime){
+  return new Promise(resolve=>{
+    const overlay = document.getElementById('time-edit-overlay');
+    const titleEl = document.getElementById('time-edit-title');
+    const inputEl = document.getElementById('time-edit-input');
+    const okBtn = document.getElementById('time-edit-confirm');
+    const cancelBtn = document.getElementById('time-edit-cancel');
+
+    titleEl.textContent = `${label}時刻を確認・修正してください`;
+    inputEl.value = initialTime || '';
+    overlay.classList.add('show');
+
+    function cleanup(result){
+      overlay.classList.remove('show');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      resolve(result);
+    }
+    function onOk(){ cleanup(inputEl.value || null); }
+    function onCancel(){ cleanup(null); }
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+  });
+}
+
 // ---- punch (time + geolocation together) ----
 document.querySelectorAll('.punch-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
+  btn.addEventListener('click', async ()=>{
     const which = btn.dataset.punch; // 'in' or 'out'
     const timeInput = document.getElementById(which==='in' ? 'f-in-time' : 'f-out-time');
     const resultEl = document.getElementById('geo-'+which);
     const label = which==='in' ? '出勤' : '退勤';
 
-    // Stamp the time immediately regardless of geolocation outcome,
-    // and unlock manual editing now that a punch has been made.
-    timeInput.value = nowTimeStr();
-    timeInput.removeAttribute('readonly');
+    // Show the time-edit screen prefilled with the current time; the field
+    // itself stays locked and can only be set via this screen.
+    const capturedTime = nowTimeStr();
+    const confirmedTime = await openTimeEditModal(label, capturedTime);
+    if(!confirmedTime) return; // user cancelled the edit screen
+    timeInput.value = confirmedTime;
 
     if(!navigator.geolocation){
       resultEl.textContent = '時刻を記録しました（この端末・ブラウザでは位置情報を取得できません）。';
