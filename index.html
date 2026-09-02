@@ -171,6 +171,7 @@
     background:#EEECE4;
     color:var(--ink-soft);
     cursor:not-allowed;
+    pointer-events:none;
   }
   textarea{resize:vertical;min-height:56px;font-size:15px;font-weight:600;}
 
@@ -182,20 +183,27 @@
     gap:10px;
     align-items:stretch;
   }
-  .punch-row input[type="time"]{flex:1;}
+  .punch-row input[type="time"]{
+    flex:1 1 0;
+    min-width:0;
+    text-align:center;
+  }
   .punch-btn{
-    flex:none;
+    flex:2 1 0;
+    min-width:0;
     border:1.4px solid var(--ink);
     background:var(--ink);
     color:#fff;
     font-family:inherit;
     font-weight:700;
-    font-size:13.5px;
-    padding:0 14px;
-    border-radius:9px;
+    font-size:15px;
+    padding:14px 8px;
+    min-height:50px;
+    border-radius:10px;
     cursor:pointer;
     white-space:nowrap;
     transition:transform .1s, background .15s;
+    touch-action:manipulation;
   }
   .punch-btn:active{transform:scale(.96);}
   .punch-btn[data-punch="in"]{background:#2F6690;border-color:#2F6690;color:#fff;}
