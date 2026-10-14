@@ -1352,7 +1352,7 @@ function showConfirm(message){
 }
 
 // ---- read a 工事名/開始/終了/休憩/内容 block ----
-const BREAK_LABEL = {0:'なし',15:'15分',30:'30分',45:'45分',60:'60分',75:'75分',90:'90分'};
+const BREAK_LABEL = {0:'00分',15:'15分',30:'30分',45:'45分',60:'60分',75:'75分',90:'90分'};
 function readWorkBlock(prefix){
   const totalEl = document.getElementById(prefix+'-total');
   return {
