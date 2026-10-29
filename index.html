@@ -508,17 +508,17 @@
     align-items:flex-start;
     margin-bottom:8px;
   }
-  .entry-date{font-size:16.5px;font-weight:900;}
-  .entry-name{font-size:13px;color:var(--ink-soft);font-weight:500;}
+  .entry-date{font-size:20px;font-weight:900;}
+  .entry-name{font-size:16px;color:var(--ink);font-weight:700;}
   .entry-actions{display:flex;align-items:center;gap:4px;}
   .entry-edit{
     border:1.4px solid var(--border);
     background:#FCFBF8;
     color:var(--ink);
-    font-size:12.5px;
-    font-weight:700;
+    font-size:15px;
+    font-weight:900;
     cursor:pointer;
-    padding:5px 10px;
+    padding:7px 14px;
     border-radius:8px;
   }
   .entry-edit:active{background:var(--ink);color:#fff;}
@@ -576,8 +576,8 @@
   .entry-top-inner{display:flex;align-items:flex-start;}
   .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
   .tag{
-    font-size:12px;font-weight:700;
-    padding:3px 9px;border-radius:20px;
+    font-size:14.5px;font-weight:900;
+    padding:4px 11px;border-radius:20px;
     color:#fff;
   }
   .tag.zaisha{background:var(--zaisha);}
@@ -593,18 +593,20 @@
   .entry-times{
     display:flex;
     gap:14px;
-    font-size:13px;
+    font-size:18px;
+    font-weight:900;
     color:var(--ink);
     border-top:1px dashed var(--border);
     padding-top:8px;
   }
   .entry-times .t{flex:1;}
-  .entry-times .t .k{color:var(--ink-soft);font-size:12px;display:block;margin-bottom:1px;}
-  .entry-times a{color:var(--zaisha);font-size:12px;text-decoration:none;}
+  .entry-times .t .k{color:var(--ink-soft);font-size:14px;font-weight:700;display:block;margin-bottom:1px;}
+  .entry-times a{color:var(--zaisha);font-size:14.5px;font-weight:700;text-decoration:none;}
   .entry-note{
     margin-top:8px;
-    font-size:13.5px;
-    color:var(--ink-soft);
+    font-size:16px;
+    font-weight:700;
+    color:var(--ink);
     background:#F6F4EF;
     border-radius:8px;
     padding:7px 9px;
@@ -617,24 +619,26 @@
     border:1px solid var(--border);
   }
   .work-block-title{
-    font-size:13px;
-    font-weight:700;
+    font-size:16px;
+    font-weight:900;
     margin-bottom:4px;
   }
   .work-block-row{
     display:flex;
     flex-wrap:wrap;
     gap:10px;
-    font-size:13px;
-    color:var(--ink-soft);
+    font-size:16px;
+    font-weight:700;
+    color:var(--ink);
   }
   .ot-badge{
-    font-weight:700;
+    font-weight:900;
     color:var(--accent);
   }
   .work-block-content{
     margin-top:6px;
-    font-size:13px;
+    font-size:16px;
+    font-weight:700;
     color:var(--ink);
     line-height:1.5;
   }
@@ -1797,15 +1801,15 @@ function renderEntry(entry){
   function hasWorkData(wb){
     return wb && (wb.name || wb.start || wb.end || wb.content);
   }
-  function renderWorkBlock(label, wb){
-    if(!hasWorkData(wb)) return '';
+  function renderWorkBlock(label, wb, breakOnly){
+    if(!hasWorkData(wb) && !(breakOnly && wb && wb.breakMin > 0)) return '';
     return `
       <div class="work-block">
         <div class="work-block-title">${label}${wb.name ? '・' + escapeHtml(wb.name) : ''}</div>
         <div class="work-block-row">
-          <span>${wb.start || '—'} 〜 ${wb.end || '—'}</span>
+          ${breakOnly ? '' : `<span>${wb.start || '—'} 〜 ${wb.end || '—'}</span>`}
           <span>休憩 ${BREAK_LABEL[wb.breakMin] !== undefined ? BREAK_LABEL[wb.breakMin] : (wb.breakMin+'分')}</span>
-          <span class="ot-badge">計 ${wb.total || '0時間0分'}</span>
+          ${breakOnly ? '' : `<span class="ot-badge">計 ${wb.total || '0時間0分'}</span>`}
         </div>
         ${wb.content ? `<div class="work-block-content">${escapeHtml(wb.content)}</div>` : ''}
       </div>`;
@@ -1837,7 +1841,7 @@ function renderEntry(entry){
         ${entry.checkOut ? geoLink(entry.checkOut.geo) : ''}
       </div>
     </div>
-    ${renderWorkBlock('勤務情報①', entry.work1)}
+    ${renderWorkBlock('勤務情報①', entry.work1, true)}
     ${renderWorkBlock('勤務情報②', entry.work2)}
     ${renderWorkBlock('残業', entry.overtime)}
     ${otherTripHtml}
