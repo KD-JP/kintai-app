@@ -817,13 +817,13 @@
       <label class="field">
         <span class="field-label">休憩時間</span>
         <select class="break-select" id="w1-break">
-          <option value="90">90分</option>
+          <option value="90" selected>90分</option>
           <option value="75">75分</option>
           <option value="60">60分</option>
           <option value="45">45分</option>
           <option value="30">30分</option>
           <option value="15">15分</option>
-          <option value="0">休憩なし</option>
+          <option value="0">0分</option>
         </select>
       </label>
       <div class="field">
@@ -855,14 +855,13 @@
       <label class="field">
         <span class="field-label">休憩時間</span>
         <select class="break-select" id="w2-break">
-        　<option value="ER">選択</option>
           <option value="90">90分</option>
           <option value="75">75分</option>
           <option value="60">60分</option>
           <option value="45">45分</option>
           <option value="30">30分</option>
           <option value="15">15分</option>
-          <option value="0">0分</option>
+          <option value="0" selected>0分</option>
         </select>
       </label>
       <div class="field">
@@ -894,14 +893,13 @@
       <label class="field">
         <span class="field-label">休憩時間</span>
         <select class="break-select" id="ot-break">
-          <option value="ER">選択</option>
           <option value="90">90分</option>
           <option value="75">75分</option>
           <option value="60">60分</option>
           <option value="45">45分</option>
           <option value="30">30分</option>
           <option value="15">15分</option>
-          <option value="0">0分</option>
+          <option value="0" selected>0分</option>
         </select>
       </label>
       <div class="field">
@@ -1519,7 +1517,7 @@ function resetForm(){
     }
     document.getElementById(prefix+'-start').value = '';
     document.getElementById(prefix+'-end').value = '';
-    document.getElementById(prefix+'-break').value = '0';
+    document.getElementById(prefix+'-break').value = (prefix === 'w1') ? '90' : '0';
     document.getElementById(prefix+'-content').value = '';
     document.getElementById(prefix+'-total').textContent = '0時間0分';
   });
